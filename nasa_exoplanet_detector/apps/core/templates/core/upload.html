@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Batch Upload</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="file" class="form-label">CSV file</label>
+    <input class="form-control" type="file" id="file" name="file" accept=".csv" required>
+  </div>
+  <button class="btn btn-primary" type="submit">Upload</button>
+</form>
+{% if message %}
+<div class="alert alert-info mt-3">{{ message }}</div>
+{% endif %}
+{% endblock %}

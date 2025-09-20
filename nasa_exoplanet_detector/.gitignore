@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+.db.sqlite3
+.db.sqlite3-journal
+trained_models/*.pkl
+trained_models/BEST.txt

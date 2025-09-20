@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Single Prediction</h2>
+<form method="post">
+  {% csrf_token %}
+  <div class="row g-3">
+    <div class="col-md-3">
+      <label class="form-label">Orbital Period (days)</label>
+      <input class="form-control" name="orbital_period" type="number" step="any" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Transit Duration (hrs)</label>
+      <input class="form-control" name="transit_duration" type="number" step="any" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Planet Radius (Earth radii)</label>
+      <input class="form-control" name="planet_radius" type="number" step="any" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Stellar Temp (K)</label>
+      <input class="form-control" name="stellar_temp" type="number" step="any">
+    </div>
+  </div>
+  <button class="btn btn-success mt-3" type="submit">Predict</button>
+</form>
+{% if result %}
+<div class="alert alert-info mt-3">
+  <strong>Prediction:</strong> {{ result }}<br>
+  <strong>Confidence:</strong> {{ confidence|floatformat:3 }}
+</div>
+{% endif %}
+{% endblock %}
