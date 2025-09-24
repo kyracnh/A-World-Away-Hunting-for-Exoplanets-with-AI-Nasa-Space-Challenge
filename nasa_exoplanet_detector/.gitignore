@@ -1,7 +1,8 @@
 __pycache__/
 *.pyc
 .venv/
-.db.sqlite3
-.db.sqlite3-journal
-trained_models/*.pkl
-trained_models/BEST.txt
+db.sqlite3
+db.sqlite3-journal
+# Keep trained models in git for deployment
+# trained_models/*.pkl
+# trained_models/BEST.txt
