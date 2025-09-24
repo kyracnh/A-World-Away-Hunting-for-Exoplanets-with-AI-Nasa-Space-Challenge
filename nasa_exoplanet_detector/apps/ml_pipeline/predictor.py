@@ -28,9 +28,24 @@ def load_best_model():
     else:
         with open(best_path, 'r') as f:
             best = f.read().strip()
-    with open(os.path.join(MODELS_DIR, f'{best}.pkl'), 'rb') as f:
-        payload = pickle.load(f)
-    return payload['model'], {'features': payload.get('features', REQUIRED_FEATURES), 'model_name': best}
+    
+    model_path = os.path.join(MODELS_DIR, f'{best}.pkl')
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f'Model file {model_path} not found.')
+    
+    try:
+        with open(model_path, 'rb') as f:
+            payload = pickle.load(f)
+        
+        if 'model' not in payload:
+            raise ValueError(f'Invalid model file structure in {model_path}')
+            
+        return payload['model'], {
+            'features': payload.get('features', REQUIRED_FEATURES), 
+            'model_name': best
+        }
+    except Exception as e:
+        raise RuntimeError(f'Error loading model from {model_path}: {str(e)}')
 
 
 def predict_single(model, features: dict, meta: dict):
@@ -41,13 +56,24 @@ def predict_single(model, features: dict, meta: dict):
     
     if hasattr(model, 'predict_proba'):
         probs = model.predict_proba(X)[0]
-        pred = model.classes_[probs.argmax()]
+        # Handle both Pipeline and direct model classes
+        if hasattr(model, 'classes_'):
+            classes = model.classes_
+        elif hasattr(model, '_final_estimator') and hasattr(model._final_estimator, 'classes_'):
+            classes = model._final_estimator.classes_
+        else:
+            # Fallback to default class order
+            classes = np.array(CLASS_ORDER)
+        
+        pred_idx = int(np.argmax(probs))
+        pred = str(classes[pred_idx])
         conf = float(probs.max())
+        
         # Create a dictionary mapping class names to probabilities
-        for i, class_name in enumerate(model.classes_):
+        for i, class_name in enumerate(classes):
             probabilities_dict[str(class_name)] = float(probs[i])
     else:
-        pred = model.predict(X)[0]
+        pred = str(model.predict(X)[0])
         conf = 1.0
         probabilities_dict[str(pred)] = 1.0
     
