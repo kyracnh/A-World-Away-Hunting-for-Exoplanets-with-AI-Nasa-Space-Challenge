@@ -1,9 +1,42 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>NASA Exoplanet AI Detector</h1>
-<p>Welcome. Use Upload to run batch predictions or Predict for a single case.</p>
+<div class="text-center mb-4">
+  <h2>Exoplanet Detection Dashboard</h2>
+  <p class="text-muted">Choose your analysis method below</p>
+</div>
 <div class="mt-3">
   <a href="/upload/" class="btn btn-primary">Upload CSV</a>
   <a href="/predict/" class="btn btn-success">Single Predict</a>
+  <a href="/results/" class="btn btn-info">View Results</a>
+</div>
+
+<div class="row mt-5">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Single Prediction</h5>
+        <p class="card-text">Enter exoplanet parameters manually and get instant AI predictions with confidence scores.</p>
+        <a href="/predict/" class="btn btn-success">Start Predicting</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Batch Upload</h5>
+        <p class="card-text">Upload CSV files with multiple exoplanet candidates for bulk processing.</p>
+        <a href="/upload/" class="btn btn-primary">Upload Data</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Results & Export</h5>
+        <p class="card-text">View all predictions with probabilities and download results as CSV for analysis.</p>
+        <a href="/results/" class="btn btn-info">View Results</a>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

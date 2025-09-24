@@ -1,5 +1,83 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Results</h2>
-<p>Coming soon.</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Prediction Results</h2>
+  <div>
+    <a href="/download-csv/" class="btn btn-success">
+      <i class="bi bi-download"></i> Download CSV
+    </a>
+    <a href="/predict/" class="btn btn-primary">New Prediction</a>
+  </div>
+</div>
+
+{% if predictions %}
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Date/Time</th>
+        <th>Input Parameters</th>
+        <th>Prediction</th>
+        <th>Confidence</th>
+        <th>Class Probabilities</th>
+        <th>Best Model</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pred in predictions %}
+      <tr>
+        <td>{{ pred.id }}</td>
+        <td>{{ pred.created_at|date:"Y-m-d H:i:s" }}</td>
+        <td>
+          <small>
+            <strong>Orbital Period:</strong> {{ pred.input_data.orbital_period|floatformat:2 }} days<br>
+            <strong>Transit Duration:</strong> {{ pred.input_data.transit_duration|floatformat:2 }} hrs<br>
+            <strong>Planet Radius:</strong> {{ pred.input_data.planet_radius|floatformat:2 }} R⊕<br>
+            <strong>Stellar Temp:</strong> {{ pred.input_data.stellar_temp|floatformat:0 }} K
+          </small>
+        </td>
+        <td>
+          <span class="badge {% if pred.prediction == 'Confirmed' %}bg-success{% elif pred.prediction == 'Candidate' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+            {{ pred.prediction }}
+          </span>
+        </td>
+        <td>{{ pred.confidence|floatformat:3 }}</td>
+        <td>
+          {% if pred.probabilities %}
+          <small>
+            {% for class_name, prob in pred.probabilities.items %}
+            <div>
+              <span class="badge bg-light text-dark">{{ class_name }}</span>
+              {{ prob|floatformat:3 }}
+            </div>
+            {% endfor %}
+          </small>
+          {% else %}
+          <em>N/A</em>
+          {% endif %}
+        </td>
+        <td><small>{{ pred.model_name }}</small></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-4">
+  <p class="text-muted">
+    <small>Showing last {{ predictions|length }} results. 
+    <a href="/download-csv/">Download full dataset as CSV</a> for complete analysis.
+    </small>
+  </p>
+</div>
+
+{% else %}
+<div class="alert alert-info">
+  <h4>No predictions yet</h4>
+  <p>Start by making your first prediction!</p>
+  <a href="/predict/" class="btn btn-primary">Make a Prediction</a>
+</div>
+{% endif %}
+
 {% endblock %}

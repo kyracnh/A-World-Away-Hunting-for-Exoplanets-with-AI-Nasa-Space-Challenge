@@ -1,15 +1,53 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Batch Upload</h2>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  <div class="mb-3">
-    <label for="file" class="form-label">CSV file</label>
-    <input class="form-control" type="file" id="file" name="file" accept=".csv" required>
+<p>Upload a CSV file with exoplanet data. The file should contain columns for orbital period, transit duration, planet radius, and stellar temperature.</p>
+
+<div class="row mb-4">
+  <div class="col-md-8">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="file" class="form-label">CSV file</label>
+        <input class="form-control" type="file" id="file" name="file" accept=".csv" required>
+        <div class="form-text">
+          Expected columns: orbital_period, transit_duration, planet_radius, stellar_temp<br>
+          Or Kepler KOI format: koi_period, koi_duration, koi_prad, koi_steff
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit">Upload & Process</button>
+    </form>
   </div>
-  <button class="btn btn-primary" type="submit">Upload</button>
-</form>
+</div>
+
 {% if message %}
-<div class="alert alert-info mt-3">{{ message }}</div>
+<div class="alert {% if error %}alert-danger{% else %}alert-success{% endif %} mt-3">
+  {{ message }}
+  {% if predictions_created %}
+  <div class="mt-2">
+    <a href="/results/" class="btn btn-sm btn-outline-primary">View Results</a>
+    <a href="/download-csv/" class="btn btn-sm btn-outline-success">Download CSV</a>
+  </div>
+  {% endif %}
+</div>
 {% endif %}
+
+{% if errors %}
+<div class="alert alert-warning mt-3">
+  <h6>Processing Errors (first 10):</h6>
+  <ul class="small mb-0">
+    {% for error in errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="mt-4">
+  <h5>Sample CSV Format</h5>
+  <pre class="bg-light p-3"><code>orbital_period,transit_duration,planet_radius,stellar_temp,name
+10.5,2.3,1.2,5500,Kepler-1b
+5.4,1.8,0.9,4800,Kepler-2b
+22.1,4.5,2.1,6200,Kepler-3b</code></pre>
+</div>
 {% endblock %}

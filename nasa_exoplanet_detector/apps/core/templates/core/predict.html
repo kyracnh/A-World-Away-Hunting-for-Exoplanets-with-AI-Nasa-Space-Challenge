@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load math_filters %}
 {% block content %}
 <h2>Single Prediction</h2>
 <form method="post">
@@ -27,6 +28,24 @@
 <div class="alert alert-info mt-3">
   <strong>Prediction:</strong> {{ result }}<br>
   <strong>Confidence:</strong> {{ confidence|floatformat:3 }}
+  
+  {% if probabilities %}
+  <div class="mt-3">
+    <strong>Class Probabilities:</strong>
+    <ul class="list-unstyled mt-2">
+      {% for class_name, prob in probabilities.items %}
+      <li>
+        <span class="badge bg-secondary me-2">{{ class_name }}</span>
+        {{ prob|floatformat:3 }} ({{ prob|multiply:100|floatformat:1 }}%)
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  
+  <div class="mt-3">
+    <a href="/results/" class="btn btn-outline-primary btn-sm">View All Results</a>
+  </div>
 </div>
 {% endif %}
 {% endblock %}

@@ -14,5 +14,9 @@ class Prediction(models.Model):
     input_data = models.JSONField()
     prediction = models.CharField(max_length=20)
     confidence = models.FloatField()
+    probabilities = models.JSONField(blank=True, null=True)  # Store all class probabilities
     model_name = models.CharField(max_length=50, default='RandomForest')
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']

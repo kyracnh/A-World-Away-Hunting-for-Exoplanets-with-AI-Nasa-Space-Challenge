@@ -30,18 +30,25 @@ def load_best_model():
             best = f.read().strip()
     with open(os.path.join(MODELS_DIR, f'{best}.pkl'), 'rb') as f:
         payload = pickle.load(f)
-    return payload['model'], {'features': payload.get('features', REQUIRED_FEATURES)}
+    return payload['model'], {'features': payload.get('features', REQUIRED_FEATURES), 'model_name': best}
 
 
 def predict_single(model, features: dict, meta: dict):
     ordered = [float(features.get(k, 0)) for k in meta['features']]
     X = np.array(ordered).reshape(1, -1)
     probs = None
+    probabilities_dict = {}
+    
     if hasattr(model, 'predict_proba'):
         probs = model.predict_proba(X)[0]
         pred = model.classes_[probs.argmax()]
         conf = float(probs.max())
+        # Create a dictionary mapping class names to probabilities
+        for i, class_name in enumerate(model.classes_):
+            probabilities_dict[str(class_name)] = float(probs[i])
     else:
         pred = model.predict(X)[0]
         conf = 1.0
-    return str(pred), conf
+        probabilities_dict[str(pred)] = 1.0
+    
+    return str(pred), conf, probabilities_dict
